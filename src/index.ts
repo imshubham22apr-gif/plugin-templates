@@ -274,12 +274,14 @@ joplin.plugins.register({
             const entry = shortcutEntries[i];
             const commandName = `templateShortcut_${i + 1}`;
 
-            const actionEnum: TemplateAction =
-                entry.action === "newNote"
-                    ? TemplateAction.NewNote
-                    : entry.action === "newTodo"
-                    ? TemplateAction.NewTodo
-                    : TemplateAction.InsertText;
+            let actionEnum: TemplateAction;
+            if (entry.action === "newNote") {
+                actionEnum = TemplateAction.NewNote;
+            } else if (entry.action === "newTodo") {
+                actionEnum = TemplateAction.NewTodo;
+            } else {
+                actionEnum = TemplateAction.InsertText;
+            }
 
             joplinCommands.add(joplin.commands.register({
                 name: commandName,
@@ -403,7 +405,17 @@ joplin.plugins.register({
                     command: "showPluginDocumentation"
                 }
             ]);
-            await commandsPanel.create();
+
+            await joplin.commands.register({
+                name: "showTemplatesPanel",
+                label: "Templates",
+                iconName: "far fa-file-alt",
+                execute: async () => {
+                    await commandsPanel.create();
+                }
+            });
+
+            await joplin.views.menuItems.create("showTemplatesPanelMenuItem", "showTemplatesPanel", MenuItemLocation.Tools);
         }
     },
 });
